@@ -28,10 +28,11 @@ function startGame (level) {
   guessedLetters = []
 
   selectedWord = getRandomWord(level)
+  displayedWord = '_'.repeat(selectedWord.length)
 
   updateDifficultyDisplay(level)
+  updateUI()
   
-
   //Show Game Area/Difficulty Display , hide selection buttons
   document.getElementById('gameArea').classList.remove('d-none')
   document.getElementById('gameArea').classList.add('d-block')
@@ -40,6 +41,8 @@ function startGame (level) {
   document.getElementById('difficultyBox').classList.add('d-block')
 
   document.getElementById('difficultySelection').classList.add('d-none')
+  //Auto-focus on input
+  document.getElementById('letterInput').focus()
 }
 
 function getRandomWord (level) {
@@ -66,4 +69,42 @@ function updateDifficultyDisplay (level) {
     difficultyBox.textContent = 'Difficulty: Hard 💀'
     difficultyBox.classList.add('hard')
   }
+}
+
+function updateUI() {
+  document.getElementById('wordDisplay').textContent = displayedWord.split('').join('  ') // Show word progress with spaces
+}
+
+function guessLetter () {
+  let inputField = document.getElementById('letterInput') // Get input field
+  let guessedLetter = inputField.value.toLowerCase() // Convert input to lowercase
+
+  //Check if input is a valid letter (A-Z)
+  if (!guessedLetter.match(/^[a-z]$/)){
+    alert('Please enter a valid letter (A-Z)!') // Alert user if invalid input
+    inputField.value = '' // Clear input field
+    return // Exit function
+  }
+  
+
+  //Check if letter was already guessed
+  if(guessedLetters.includes(guessLetter)){
+    alert(`You already guessed '${guessedLetter}'. Try a different letter!`)
+    inputField.value = '' // Clear input field
+    return
+  }
+
+  //Store guessed letter
+  guessedLetters.push(guessedLetter)
+
+  //Check if guessed letter is in the selected word
+  if (selectedWord.includes(guessedLetter)){
+    updateCorrectGuess(guessedLetter)
+  } else {
+    updateWrongGuess(guessedLetter)
+  }
+
+  inputField.value = '' // Clear input field
+  document.getElementById('letterInput').focus() // Refocus input field for next guess
+
 }
